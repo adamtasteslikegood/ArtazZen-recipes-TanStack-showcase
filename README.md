@@ -25,9 +25,10 @@ The blog is the real-world content the framework comparison is built around.
 
 These are planning notes, not commitments.
 
-- [ ] Choose the TanStack setup (for example TanStack Start, Router, Query)
-- [ ] Define the content model (recipe, artwork, photo, tags)
-- [ ] Decide how content is stored (files such as Markdown/MDX, or a database)
+- [x] Choose the TanStack variant: Start with TypeScript and React (see [ADR-0001](docs/adr/0001-use-tanstack-start-with-typescript-and-react.md))
+- [x] Define the content model: one blog with two content types, recipe and artwork (see [ADR-0002](docs/adr/0002-unified-blog-content-model-and-file-based-storage.md))
+- [x] Decide how content is stored: files first, database as phase 2 (see ADR-0002)
+- [ ] Agree the field-level schemas using sample recipe and artwork JSON
 - [ ] Build the recipe list and detail pages
 - [ ] Build the artwork gallery
 - [ ] Bring in existing content from both sites
