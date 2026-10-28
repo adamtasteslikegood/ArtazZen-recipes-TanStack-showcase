@@ -1,0 +1,126 @@
+{
+  "ai_image_gcs": "gs://tasteslikegood-recipe-images/images/537c143a-4962-47dd-a3e2-d2d95d2025a7/42fa07a4-aad9-4c11-9f08-dc897ce65ca1.png",
+  "ai_image_url": "/api/recipes/537c143a-4962-47dd-a3e2-d2d95d2025a7/image",
+  "ai_metadata": {
+    "image_enqueue": {
+      "status": "complete",
+      "timestamp": "2026-10-28T16:20:34.094649"
+    },
+    "image_generation": {
+      "is_authenticated": false,
+      "model": "gemini-nano-banana-2.1",
+      "prompt": "Professional food photography of Crispy Vegan Grilled Cheese Sandwich. vegan grilled cheese sandwich, melted cheese pull sandwich, golden brown toasted bread, crispy sourdough sandwich. High resolution, photorealistic, natural lighting, overhead shot, delicious plating.",
+      "session_id": "session_31bc14b118a445ed8ab592451edce687",
+      "success": true,
+      "timestamp": "2026-10-28T16:20:34.094649",
+      "user_display_name": "Background Worker",
+      "user_id": null
+    },
+    "recipe_generation": {
+      "is_authenticated": false,
+      "model": "gemini-3.8-flash",
+      "prompt": "Grilled Cheese Sandwich",
+      "session_id": "session_31bc14b118a445ed8ab592451edce687",
+      "success": true,
+      "timestamp": "2026-10-28T16:20:24.804959",
+      "user_display_name": "Background Worker",
+      "user_id": null
+    },
+    "stock_image_generation": null
+  },
+  "cookTime": 8,
+  "description": "A classic comfort food made entirely plant-based, featuring golden, buttery toasted sourdough bread and rich, gooey melted vegan cheese.",
+  "id": "537c143a-4962-47dd-a3e2-d2d95d2025a7",
+  "image_keywords": [
+    "vegan grilled cheese sandwich",
+    "melted cheese pull sandwich",
+    "golden brown toasted bread",
+    "crispy sourdough sandwich"
+  ],
+  "ingredients": {
+    "dry": [
+      {
+        "amount": 2,
+        "name": "Sourdough bread",
+        "notes": "medium-thick sliced",
+        "units": "slices"
+      },
+      {
+        "amount": 0.25,
+        "name": "Garlic powder",
+        "units": "tsp"
+      }
+    ],
+    "other": [
+      {
+        "amount": 2,
+        "name": "Vegan cheddar cheese slices",
+        "notes": "good melting variety",
+        "units": "slices"
+      },
+      {
+        "amount": 1,
+        "name": "Vegan mozzarella or provolone slices",
+        "notes": "for extra stretch and creaminess",
+        "units": "slices"
+      }
+    ],
+    "wet": [
+      {
+        "amount": 1.5,
+        "name": "Vegan butter",
+        "notes": "softened, or substitute with vegan mayonnaise",
+        "units": "Tbsp"
+      },
+      {
+        "amount": 0.5,
+        "name": "Dijon mustard",
+        "notes": "optional, for added tang and depth",
+        "units": "tsp"
+      }
+    ]
+  },
+  "instructions": [
+    {
+      "description": "Heat a heavy skillet or non-stick pan over medium-low heat.",
+      "step": 1
+    },
+    {
+      "description": "Spread the vegan butter evenly across one side of each slice of sourdough bread.",
+      "step": 2
+    },
+    {
+      "description": "On the unbuttered side of one slice, lightly spread the Dijon mustard and sprinkle with garlic powder.",
+      "step": 3
+    },
+    {
+      "description": "Place the prepared bread slice butter-side down in the warm skillet, layer the vegan cheddar and mozzarella slices on top, and cap with the second slice of bread, butter-side facing up.",
+      "step": 4
+    },
+    {
+      "description": "Cover the skillet with a lid to trap heat and encourage the vegan cheese to melt. Cook for 3 to 4 minutes until the bottom slice turns golden-brown and crisp.",
+      "step": 5
+    },
+    {
+      "description": "Remove lid, carefully flip the sandwich, and cover again. Cook for another 3 to 4 minutes until the second side is evenly toasted and the cheese is fully melted.",
+      "step": 6
+    },
+    {
+      "description": "Transfer to a cutting board, allow to settle for 1 minute, slice diagonally, and serve immediately.",
+      "step": 7
+    }
+  ],
+  "name": "Crispy Vegan Grilled Cheese Sandwich",
+  "notes": "Covering the pan with a lid is essential for trapping steam so plant-based cheeses melt completely before the bread burns. For an extra savory crunch, sprinkle nutritional yeast onto the buttered exterior before frying.",
+  "prepTime": 5,
+  "servings": 1,
+  "tags": [
+    "vegan",
+    "sandwich",
+    "grilled cheese",
+    "comfort food",
+    "quick and easy",
+    "dairy-free"
+  ],
+  "user_id": null
+}
