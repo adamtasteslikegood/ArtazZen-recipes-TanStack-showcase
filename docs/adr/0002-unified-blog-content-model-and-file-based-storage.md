@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed (the author settled the direction on 2026-10-28; the recipe schema was inferred from one sample and the art schema comes from the real sidecar schema, so field mappings below are provisional until a few more samples are checked)
+Proposed (the author settled the direction on 2026-10-28; the recipe schema now follows the served payload of tasteslikegood.org, checked against three live samples, and the art schema comes from the real sidecar schema; field mappings stay provisional until a real art sidecar is checked)
 
 ## Context
 
@@ -58,19 +58,19 @@ Entries are validated against a schema when loaded, so bad data fails the build 
 
 ### 3. Field mapping from the real data
 
-Sources: `docs/ImageSidecar.schema.json` (the artwork sidecar schema from artazzen.com, a JSON Schema document) and `docs/Recipe.schema.json` (inferred from one exported recipe, `docs/Crispy_Vegan_Grilled_Cheese_Sandwich copy.json`). Both schemas validate against the JSON Schema 2020-12 meta-schema, and the sample recipe validates against the recipe schema.
+Sources: `docs/ImageSidecar.schema.json` (the artwork sidecar schema from artazzen.com, a JSON Schema document) and `docs/Recipe.schema.json` (the shape served by tasteslikegood.org, from three samples in `docs/samples/tasteslikegood/rest/`; the author states served data is always migrated to the current schema, so the served shape is the source of truth). Both schemas validate against the JSON Schema 2020-12 meta-schema, and the three served recipes and the older export all validate against the recipe schema.
 
 | Envelope field | Recipe source | Artwork source |
 |---|---|---|
 | `type` | constant `recipe` | constant `art` |
-| `slug` | **none in the data**; derive from `name` | **none in the data**; derive from the image filename (the sidecar sits beside the image) |
+| `slug` | `slug` (a real field in the served payload; derive from `name` only for the older export) | **none in the data**; derive from the image filename (the sidecar sits beside the image) |
 | `title` | `name` | `title` |
 | `summary` | `description` | `caption`, falling back to `description` |
 | `tags` | `tags` | `tags` |
-| `date` | **no clear field**; the nearest is `ai_metadata.image_generation.timestamp` | `detected_at` (Unix epoch seconds) |
-| `images` | `ai_image_url` (a path on the live site's API, not a file) | the image file beside the sidecar |
+| `date` | **none in the served payload**; the export's `ai_metadata.image_generation.timestamp` is internal and stripped, so recipes have no date unless one is added | `detected_at` (Unix epoch seconds) |
+| `images` | `image` (absolute URL on the live site's API, not a file; same value as `ai_image_url`) | the image file beside the sidecar |
 
-Recipe-specific fields: `ingredients` (an object grouped as `dry`, `wet` and `other`, each a list of `{amount, name, units, notes?}`), `instructions` (a list of `{step, description}`), `prepTime`, `cookTime`, `servings`, `notes`. Times have no unit in the data (minutes assumed).
+Recipe-specific fields: `ingredients` (an object grouped as `dry`, `wet` and `other`, each a list of `{amount, name, units, notes?}`), `instructions` (served as a list of plain strings; the older export uses `{step, description}` objects, which the importer should flatten to strings), `prepTime`, `cookTime`, `servings`, `notes`. Times have no unit in the data (minutes assumed).
 
 Artwork-specific fields: `description`, `caption`, `artist`, `copyright`, `collections` and `series` (slug arrays), `status` (`pending`, `approved` or `hidden`).
 
@@ -78,9 +78,9 @@ Rules that follow from the data:
 
 - **Publish only approved artwork.** The sidecar has a curation `status`; the importer should include only `approved` items.
 - **Use the current fields, not the deprecated ones.** The sidecar marks `reviewed`, `author` and `collection` as deprecated in favour of `status`, `artist` and `collections`.
-- **Strip internal fields at import, before content reaches the repository.** Recipes carry `ai_metadata` (prompts, model names, session ids), `ai_image_gcs` (an internal storage bucket path) and `user_id`. Art sidecars carry `ai_details` (including `raw_response`, `error_body` and the prompt) and `ai_fields`. None of this is needed for display, and committing it would publish internal detail. Keep only the fields the site renders.
-- **Images need a download step.** The recipe's `ai_image_url` is relative to the live site, so the importer must fetch the image and store it as a file.
-- **Slugs and dates are a gap, not a detail.** Neither source has a slug, and recipes have no authored date. Decide the slug rule (and how to avoid collisions) and what recipe date to show, or whether to show none.
+- **Strip internal fields at import, before content reaches the repository.** The older recipe export carries `ai_metadata` (prompts, model names, session ids), `ai_image_gcs` (an internal storage bucket path), `image_keywords` and `user_id`; the served payload omits all four (grep of the saved samples found no `user_id` or `ai_metadata`). Served-only fields that are not content, `breadcrumbs`, `is_public` and `stock_image_url`, are also dropped, and only recipes with `is_public: true` are imported. Art sidecars carry `ai_details` (including `raw_response`, `error_body` and the prompt) and `ai_fields`. None of this is needed for display, and committing it would publish internal detail. Keep only the fields the site renders.
+- **Images need a download step.** The served `image` is an absolute URL on the live site (the export's `ai_image_url` is a relative path), so the importer must fetch the image and store it as a file.
+- **Slugs and dates.** Served recipes have a real `slug`, so only artwork needs a derived slug (decide the rule and collision handling). Recipes have no date in the served payload; decide whether to show none, add one at import, or take a field from the live database if the author exposes one.
 
 ### 4. Keep storage behind one interface
 
@@ -127,7 +127,7 @@ When revisited, the existing `data` column (JSON string) maps naturally onto the
 
 ## Open items
 
-1. **More samples.** The recipe schema comes from one recipe, so which fields are optional (for example `notes`, `units`, or ingredient groups other than `dry`, `wet` and `other`) is unverified, and `amount` may be a string in some recipes. A few more recipes, and one real art sidecar plus its image, would confirm the mapping. The tasteslikegood.org database schema has not been supplied; the recipe export is the only evidence so far.
+1. **More samples.** The recipe schema is checked against three served recipes, so which fields are optional (for example `notes`, `units`, or ingredient groups other than `dry`, `wet` and `other`) is still unverified, and `amount` may be a string in some recipes. One real art sidecar plus its image would confirm the artwork mapping. The tasteslikegood.org database schema has not been supplied; the recipe export is the only evidence so far.
 1a. **Slug and date rules** (see the mapping above).
 2. **Image storage.** In the repository, a separate asset host, or a hybrid. This affects build size and the image optimisation pipeline.
 3. **Markdown or MDX.** Plain Markdown is simpler; MDX allows embedding React components in prose, which supports the "designer" goals but adds build complexity.

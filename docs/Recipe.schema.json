@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.com/schemas/Recipe.schema.json",
-  "title": "Recipe (tasteslikegood.org export)",
-  "description": "Inferred from a single exported recipe (docs/Crispy_Vegan_Grilled_Cheese_Sandwich copy.json). Only fields seen in that sample are described; optionality beyond 'required' is unverified. Unknown extra fields are allowed until more samples are checked.",
+  "title": "Recipe (tasteslikegood.org served shape)",
+  "description": "Served shape of a recipe from tasteslikegood.org (GET /api/recipes/public/{slug}), checked against three live samples in docs/samples/tasteslikegood/rest/. The author states served data is always migrated to the current schema, so the served shape is the source of truth. Fields marked 'export-only' appear in the older account export (docs/Crispy_Vegan_Grilled_Cheese_Sandwich copy.json) but not in the public payload; they are internal and must be stripped at import. Optionality beyond 'required' is unverified (3 samples). Unknown extra fields are allowed.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -37,91 +37,217 @@
       "description": "Ingredients grouped by kind. Groups seen: dry, wet, other. Other group names may exist.",
       "additionalProperties": {
         "type": "array",
-        "items": { "$ref": "#/$defs/ingredient" }
+        "items": {
+          "$ref": "#/$defs/ingredient"
+        }
       }
     },
     "instructions": {
       "type": "array",
-      "items": { "$ref": "#/$defs/instructionStep" }
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "$ref": "#/$defs/instructionStep"
+          }
+        ]
+      },
+      "description": "Served shape: array of plain strings, in order. The export shape is an array of {step, description} objects (export-only). Importer should normalise to strings."
     },
     "notes": {
       "type": "string"
     },
     "tags": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "image_keywords": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "Keywords used to generate the image. Candidate for alt text or search, not for display."
+      "items": {
+        "type": "string"
+      },
+      "description": "Export-only. Keywords used to generate the image. Internal; strip at import."
     },
     "ai_image_url": {
       "type": "string",
-      "description": "Path on the live site's API that serves the image (relative, not a file). The image must be downloaded separately."
+      "description": "Image URL. Absolute in the served payload (same value as 'image'); a relative API path in the export. The image must be downloaded separately."
     },
     "ai_image_gcs": {
       "type": "string",
       "pattern": "^gs://",
-      "description": "Internal cloud-storage location of the image. Internal detail; do not publish."
+      "description": "Export-only. Internal cloud-storage location of the image. Do not publish."
     },
     "ai_metadata": {
       "type": "object",
-      "description": "Generation provenance (models, prompts, session ids, timestamps). Internal detail; do not publish as-is.",
+      "description": "Export-only. Generation provenance (models, prompts, session ids, user names). Internal; do not publish.",
       "properties": {
-        "image_enqueue": { "$ref": "#/$defs/statusEvent" },
-        "image_generation": { "$ref": "#/$defs/generationEvent" },
-        "recipe_generation": { "$ref": "#/$defs/generationEvent" },
-        "stock_image_generation": { "type": ["object", "null"] }
+        "image_enqueue": {
+          "$ref": "#/$defs/statusEvent"
+        },
+        "image_generation": {
+          "$ref": "#/$defs/generationEvent"
+        },
+        "recipe_generation": {
+          "$ref": "#/$defs/generationEvent"
+        },
+        "stock_image_generation": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
       },
       "additionalProperties": true
     },
     "user_id": {
-      "type": ["string", "null"],
-      "description": "Owner id on the live site. Internal detail; do not publish."
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Export-only. Owner id on the live site. Internal; do not publish."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "URL slug, a real field in the served payload (no derivation needed for served recipes). Absent from the export."
+    },
+    "is_public": {
+      "type": "boolean",
+      "description": "Served payload flag. Import only recipes where this is true."
+    },
+    "image": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "description": "Absolute URL of the recipe image on the live site. Must be downloaded by the importer."
+    },
+    "stock_image_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Stock image URL; null in all samples seen."
+    },
+    "breadcrumbs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      },
+      "description": "Site navigation trail. Derived by the live site; not content, do not import."
     }
   },
-  "required": ["id", "name", "ingredients", "instructions"],
+  "required": [
+    "id",
+    "name",
+    "ingredients",
+    "instructions"
+  ],
   "$defs": {
     "ingredient": {
       "type": "object",
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "amount": { "type": "number", "minimum": 0 },
-        "units": { "type": "string" },
-        "notes": { "type": "string" }
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "units": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
       },
-      "required": ["name", "amount"],
+      "required": [
+        "name",
+        "amount"
+      ],
       "additionalProperties": true
     },
     "instructionStep": {
       "type": "object",
       "properties": {
-        "step": { "type": "integer", "minimum": 1 },
-        "description": { "type": "string", "minLength": 1 }
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
       },
-      "required": ["step", "description"],
-      "additionalProperties": true
+      "required": [
+        "step",
+        "description"
+      ],
+      "additionalProperties": true,
+      "description": "Export-only instruction form. Not present in the served payload."
     },
     "statusEvent": {
       "type": "object",
       "properties": {
-        "status": { "type": "string" },
-        "timestamp": { "type": "string" }
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        }
       },
       "additionalProperties": true
     },
     "generationEvent": {
       "type": "object",
       "properties": {
-        "model": { "type": "string" },
-        "prompt": { "type": "string" },
-        "session_id": { "type": "string" },
-        "success": { "type": "boolean" },
-        "timestamp": { "type": "string" },
-        "is_authenticated": { "type": "boolean" },
-        "user_display_name": { "type": "string" },
-        "user_id": { "type": ["string", "null"] }
+        "model": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "is_authenticated": {
+          "type": "boolean"
+        },
+        "user_display_name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       },
       "additionalProperties": true
     }
