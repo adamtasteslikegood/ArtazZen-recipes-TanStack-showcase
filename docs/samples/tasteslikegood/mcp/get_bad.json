@@ -1,0 +1,3 @@
+{"id":5,"jsonrpc":"2.0","result":{"content":[{"text":"Recipe not found","type":"text"}],"isError":true}}
+
+[HTTP 200 application/json]

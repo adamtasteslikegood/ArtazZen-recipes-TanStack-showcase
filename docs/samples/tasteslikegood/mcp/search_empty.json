@@ -1,0 +1,3 @@
+{"id":4,"jsonrpc":"2.0","result":{"content":[{"text":"{\"attribution\": \"Recipe from Tasteslikegood.org (VeganGenius Chef), generated with Google Gemini. Credit Tasteslikegood.org and link to the recipe when you show it.\", \"recipes\": []}","type":"text"}],"isError":false,"structuredContent":{"attribution":"Recipe from Tasteslikegood.org (VeganGenius Chef), generated with Google Gemini. Credit Tasteslikegood.org and link to the recipe when you show it.","recipes":[]}}}
+
+[HTTP 200 application/json]

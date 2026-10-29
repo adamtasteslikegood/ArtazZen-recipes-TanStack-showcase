@@ -1,0 +1,3 @@
+{"id":2,"jsonrpc":"2.0","result":{"tools":[{"description":"Search the published vegan recipes on Tasteslikegood.org by name.","inputSchema":{"additionalProperties":false,"properties":{"limit":{"default":10,"maximum":20,"minimum":1,"type":"integer"},"query":{"description":"Words to look for in recipe names.","type":"string"}},"required":[],"type":"object"},"name":"search_recipes"},{"description":"Get one published recipe: ingredients, instructions, times and tags.","inputSchema":{"additionalProperties":false,"properties":{"slug":{"description":"The recipe's slug, from search_recipes.","type":"string"}},"required":["slug"],"type":"object"},"name":"get_recipe"}]}}
+
+[HTTP 200 application/json]
